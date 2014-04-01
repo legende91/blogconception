@@ -1,0 +1,21 @@
+<?php
+
+$title = 'Ajouter un nouveau Membre';
+ $this->headTitle($title);
+ ?>
+ <h1><?php echo $this->escapeHtml($title); ?></h1>
+ <?php
+ $form->setAttribute('action', $this->url('blog_addMember', array('action' => 'addMember')));
+
+ $form->prepare();
+
+ echo $this->form()->openTag($form);
+ echo $this->formRow($form->get('name')).'<br>';
+ echo $this->formRow($form->get('mail')).'<br>';
+ echo $this->formRow($form->get('password')).'<br>';
+ echo $this->formRow($form->get('tel')).'<br>';
+ echo $this->formRow($form->get('level'));
+ echo $this->formRow($form->get('adress')).'<br>';
+ echo $this->formRow($form->get('skype')).'<br>';
+ echo $this->formSubmit($form->get('submit')).'<br>';
+ echo $this->form()->closeTag();
