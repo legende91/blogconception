@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="Blog pour exposer des tutos">
+        <meta name="author" content="legende91">
+        <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
+
+        <title>Bienvenue sur mon Blog</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="jumbotron.css" rel="stylesheet">
+
+        <!-- Just for debugging purposes. Don't actually copy this line! -->
+        <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+    </head>
+
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Barre de navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="<?php echo $this->url(); ?>">Blog de Tutos</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <?php if ($this->Identity()): ?>
+                        <a class="btn btn-primary btn-lg" role="button" href="<?php echo $this->url('logout', array('action' => 'logout')); ?>">Logout</a>"
+                        <a class="btn btn-primary btn-lg" role="button" href="<?php echo $this->url('blog_profilMember', array('action' => 'profilMember')); ?>">Mon Compte</a>"
+                        <a class="btn btn-primary btn-lg" role="button" href="<?php echo $this->url('tutorial', array('action' => 'index')); ?>">Mes Tutos</a>"
+                        <a class="btn btn-primary btn-lg" role="button" href="<?php echo $this->url('tutorial_add', array('action' => 'add')); ?>">Créer un tutos</a>"
+                        <?php else:
+                        ?>
+                        <form class="navbar-form navbar-right" role="form" method="POST" action="<?php echo $this->url('login', array('action' => 'login')); ?> ">
+                            <div class="form-group">
+                                <input type="text" placeholder="name"  name="name" class="form-control">
+
+                            </div>
+                            <div class="form-group">
+                                <input type="password" placeholder="Password"  name="password" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-success">Sign in</button>
+                        </form>
+
+                    <?php endif; ?>
+                </div><!--/.navbar-collapse -->
+            </div>
+        </div>
+
+        <!-- Main jumbotron for a primary marketing message or call to action -->
+         <div class="jumbotron">
+            <div class="container">
+                <?php if(!$this->Identity()) : ?>
+                <h1>Site de Tutoriaux entre amis</h1>
+                <p> bienvenue sur votre site de tutos, j'éspere que vous trouverez les réponses à vos recherches.
+                    N'hesité pas à poster vous même des petits tutos, et corriger ce de vos amis.
+                    Bonne navigation a tous le monde.</p>
+               
+                <?php else :  ?>
+                <h1>Bonjour, <?php echo $this->identity()['name']; ?></h1>
+                <p> <?php  echo $this->flashMessenger()->render(); ?></p>
+                <?php   endif; ?>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Example row of columns -->
+            
+<?php
+if ($this->Identity()):
+    foreach ($tutorials as $tutorial):
+        ?>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h2><?php echo $this->escapeHtml($tutorial->title); ?></h2>
+                            <p><?php echo $this->escapeHtml($tutorial->contente); ?> </p>
+                            <p>De : <?php echo $this->escapeHtml($tutorial->name) ?></p>
+                             <?php if ($this->identity()['id'] ==$tutorial->member_id): ?>
+                            <p><a class="btn btn-default" role="button" href="<?php echo $this->url('tutorial_edit', array('id' => $tutorial->id));
+            ?>">Edit </a> 
+                                <a class="btn btn-default" role="button"  href="<?php echo $this->url('tutorial_delete', array('id' => $tutorial->id));
+        ?>">Delete</a></p>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+
+                <table class="table">
+                    <tr>
+                        <th>Nom des membres</th>
+                        <th>Adress</th>
+                        <th>Skype</th>
+                        <th>Email</th>
+                        <th>Inscrit le</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    <?php foreach ($members as $member) : ?>
+                        <tr>
+                            <td><?php echo $this->escapeHtml($member->name); ?></td>
+                            <td><?php echo $this->escapeHtml($member->adress); ?></td>
+                            <td><?php echo $this->escapeHtml($member->skype); ?></td>
+                            <td><?php echo $this->escapeHtml($member->mail); ?></td>
+                            <td><?php echo $this->escapeHtml($member->date_creat); ?></td>
+
+                            <td><?php if ($this->Identity()): ?>
+                                    <a class="btn btn-default" role="button" href="<?php echo $this->url('blog_editMember', array('id' => $member->id));
+                            ?>">Edit</a>
+                                    <a class="btn btn-default" role="button" href="<?php echo $this->url('blog_deleteMember', array('id' => $member->id));
+                            ?>">Delete</a>
+                                   <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        </div>
+
+    </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+</body>
+</html>
+
