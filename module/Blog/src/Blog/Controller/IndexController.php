@@ -52,6 +52,7 @@ class IndexController extends AbstractActionController {
      * @var $sm
      * @return type 
      */
+    
     public function getMemberTable() {
 
         if (!$this->memberTable) {
@@ -155,9 +156,6 @@ class IndexController extends AbstractActionController {
             return $this->redirect()->toRoute('success');
         }
     }
-
-    //----------------------------------------------------------------------------->
-// 
 
     /**
      * 

@@ -26,6 +26,13 @@ class TutorialController extends AbstractActionController {
     protected $memberTable;
     protected $form;
 
+    /**
+     * 
+     * function for reply tutorial Object
+     * @var $sm
+     * @return $this->tutorialTable
+     * 
+     */
     public function getTutorialTable() {
 
         if (!$this->tutorialTable) {
@@ -35,9 +42,13 @@ class TutorialController extends AbstractActionController {
         return $this->tutorialTable;
     }
 
-//----------------------------------------------------------------------------->
-// methode for connect to my db on Member table
-
+    /**
+     * 
+     * methode for reply Member Object
+     * @var $sm
+     * @return type 
+     */
+    
     public function getMemberTable() {
 
         if (!$this->memberTable) {
@@ -47,9 +58,15 @@ class TutorialController extends AbstractActionController {
         return $this->memberTable;
     }
 
-//----------------------------------------------------------------------------->
-// Default Controller
 
+     /**
+     * 
+     * Default Controller
+     * @var $this->getTutorialTable(), $this->getMemberTable()
+     * @return \Zend\View\Model\ViewModel
+     *  
+     */
+    
     public function indexAction() {
 
         return new ViewModel(array(
@@ -58,10 +75,22 @@ class TutorialController extends AbstractActionController {
         ));
     }
 
-//----------------------------------------------------------------------------->
-// function for Add Formulaire and ppl
 
+    /**
+     * 
+     * Controller for Add Tutorial
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
+     * @var $member_id, $form, $request, $tutorial
+     * @return $this->addAction()
+     * 
+     */
+    
     public function addAction() {
+         /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute('home');
         }
@@ -84,14 +113,29 @@ class TutorialController extends AbstractActionController {
         return array('form' => $form);
     }
 
-    //----------------------------------------------------------------------------->
-// Controller Edit Tuto
-
+     /**
+     * 
+     * Controller Edit Tutorial
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(),
+     * @var $id, $tutorial, $form, $request, $redirect, $member_id
+     * @return 
+     * 
+     */
+    
     public function editAction() {
+         /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute('home');
         }
-        // We take ID on Params to URL 
+        /**
+         * 
+         *  We take ID on Params to URL 
+         * 
+         */
         $id = (int) $this->params()->fromRoute('id', 0);
         if (!$id) {
             return $this->redirect()->toRoute('tutorial_edit', array(
@@ -99,8 +143,13 @@ class TutorialController extends AbstractActionController {
             ));
         }
 
-        // Get the Tutorial with the specified id.  An exception is thrown
-        // if it cannot be found, in which case go to the index page.
+        /**
+         * 
+         * Get the Member with the specified id.  An exception is thrown
+         * if it cannot be found, in which case go to the index page.
+         * 
+         */
+        
         try {
             $tutorial = $this->getTutorialTable()->getTutorial($id);
         } catch (\Exception $ex) {
@@ -121,7 +170,11 @@ class TutorialController extends AbstractActionController {
             if ($form->isValid()) {
                 $this->getTutorialTable()->saveTutorial($tutorial, $member_id);
 
-                // Redirect to list of Member
+                  /**
+                 * 
+                 *  Redirect to list of tutorial
+                 * 
+                 */
                 return $this->redirect()->toRoute('home');
             }
         }
@@ -131,22 +184,31 @@ class TutorialController extends AbstractActionController {
             'form' => $form,
         );
     }
-
+    /**
+     * 
+     * fucntion for delete Tutorial 
+     * @var $redirect, $member_id, $id 
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
+     * @var $this->getTutorialTable()->deleteTutorial($id)
+     * @return type
+     * 
+     */
     public function deleteAction() {
+        $redirect = 'home';
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
-            return $this->redirect()->toRoute('home');
+            return $this->redirect()->toRoute($redirect);
         }
         $member_id = $this->getServiceLocator()->get('AuthService')->getIdentity()['id'];
 
         $id = (int) $this->params()->fromRoute('id', 0);
         if ($member_id = !$id) {
-            return $this->redirect()->toRoute('home');
+            return $this->redirect()->toRoute($redirect);
         }
         if (!$id) {
-            return $this->redirect()->toRoute('home');
+            return $this->redirect()->toRoute($redirect);
         }
         $this->getTutorialTable()->deleteTutorial($id);
-        return $this->redirect()->toRoute('home');
+        return $this->redirect()->toRoute($redirect);
     }
 
 }
