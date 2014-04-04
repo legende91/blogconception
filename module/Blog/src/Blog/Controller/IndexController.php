@@ -18,11 +18,12 @@ use Blog\Model\Tutorial;
 use Blog\Form\TutorialForm;
 
 class IndexController extends AbstractActionController {
-/**
- *
- * @var $memberTable, $form , $storage, $authservice, $tutorialTable
- * 
- */
+
+    /**
+     *
+     * @var $memberTable, $form , $storage, $authservice, $tutorialTable
+     * 
+     */
     protected $memberTable;
     protected $form;
     protected $storage;
@@ -45,13 +46,12 @@ class IndexController extends AbstractActionController {
         return $this->tutorialTable;
     }
 
-/**
- * 
- * methode for reply Member Object
- * @var $sm
- * @return type 
- */
-
+    /**
+     * 
+     * methode for reply Member Object
+     * @var $sm
+     * @return type 
+     */
     public function getMemberTable() {
 
         if (!$this->memberTable) {
@@ -66,7 +66,6 @@ class IndexController extends AbstractActionController {
      * @var $form, $member, $request
      * @return type
      */
-
     public function addAction() {
         /**
          * 
@@ -80,7 +79,7 @@ class IndexController extends AbstractActionController {
         $form->get('submit')->setValue('addMember');
 
         $request = $this->getRequest();
-        
+
         /**
          * 
          * we see if forumlaire is ok else we redirect to Formulaire
@@ -113,7 +112,6 @@ class IndexController extends AbstractActionController {
      * @return $this->authservice
      * 
      */
-
     public function getAuthService() {
 
         if (!$this->authservice) {
@@ -147,7 +145,6 @@ class IndexController extends AbstractActionController {
      * @return $this->redirect()->toRoute('success')
      * 
      */
-
     public function loginAction() {
         /**
          * 
@@ -227,14 +224,13 @@ class IndexController extends AbstractActionController {
         return $this->redirect()->toRoute($redirect);
     }
 
-/**
- * 
- * public function logout
- * @var $this->getSessionStorage(), $this->getAuthService(),$this->flashmessenger()
- * @return $this->redirect()->toRoute('home')
- *  
- */
-
+    /**
+     * 
+     * public function logout
+     * @var $this->getSessionStorage(), $this->getAuthService(),$this->flashmessenger()
+     * @return $this->redirect()->toRoute('home')
+     *  
+     */
     public function logoutAction() {
         $this->getSessionStorage()->forgetMe();
         $this->getAuthService()->clearIdentity();
@@ -242,14 +238,13 @@ class IndexController extends AbstractActionController {
         return $this->redirect()->toRoute('home');
     }
 
-/**
- * 
- * Default Controller
- * @var $this->getTutorialTable(), $this->getMemberTable()
- * @return \Zend\View\Model\ViewModel
- *  
- */
-
+    /**
+     * 
+     * Default Controller
+     * @var $this->getTutorialTable(), $this->getMemberTable()
+     * @return \Zend\View\Model\ViewModel
+     *  
+     */
     public function indexAction() {
         return new ViewModel(array(
             'tutorials' => $this->getTutorialTable()->fetchAll(),
@@ -257,16 +252,15 @@ class IndexController extends AbstractActionController {
         ));
     }
 
-/**
- * 
- * Controller for Add member
- * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
- * @return $this->addAction()
- * 
- */
-
+    /**
+     * 
+     * Controller for Add member
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
+     * @return $this->addAction()
+     * 
+     */
     public function addMemberAction() {
-         /**
+        /**
          * 
          * we see if ppl was logged.
          * 
@@ -274,26 +268,25 @@ class IndexController extends AbstractActionController {
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute('home');
         }
-        
+
         return $this->addAction();
     }
 
-/**
- * 
- * Controller for Delete Member
- * @var $id, $this->getMemberTable(), $home
- * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
- * @return type
- * 
- */
-
+    /**
+     * 
+     * Controller for Delete Member
+     * @var $id, $this->getMemberTable(), $home
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
+     * @return type
+     * 
+     */
     public function deleteMemberAction() {
-         /**
+        /**
          * 
          * we see if ppl was logged.
          * 
          */
-        $home= 'home';
+        $home = 'home';
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute($home);
         }
@@ -305,22 +298,21 @@ class IndexController extends AbstractActionController {
         return $this->redirect()->toRoute($home);
     }
 
-/**
- * 
- * Controller Edit Member
- * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(),
- * @var $id, $member, $form, $request, $redirect
- * @return 
- * 
- */
-
+    /**
+     * 
+     * Controller Edit Member
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(),
+     * @var $id, $member, $form, $request, $redirect
+     * @return 
+     * 
+     */
     public function editMemberAction() {
-         /**
+        /**
          * 
          * we see if ppl was logged.
          * 
          */
-        $redirect= 'home';
+        $redirect = 'home';
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute($redirect);
         }
@@ -342,7 +334,6 @@ class IndexController extends AbstractActionController {
          * if it cannot be found, in which case go to the index page.
          * 
          */
-        
         try {
             $member = $this->getMemberTable()->getMember($id);
         } catch (\Exception $ex) {
@@ -377,21 +368,20 @@ class IndexController extends AbstractActionController {
         );
     }
 
-/**
- * 
- * Controller Profil Member
- * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(), $member_id
- * @var $form, $request
- * 
- */
-
+    /**
+     * 
+     * Controller Profil Member
+     * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(), $member_id
+     * @var $form, $request
+     * 
+     */
     public function profilMemberAction() {
         /**
          * 
          * we see if ppl was logged.
          * 
          */
-        $redirect= 'home';
+        $redirect = 'home';
         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute($redirect);
         }
@@ -413,7 +403,6 @@ class IndexController extends AbstractActionController {
          * if it cannot be found, in which case go to the index page.
          * 
          */
-        
         try {
             $member = $this->getMemberTable()->getMember($member_id);
         } catch (\Exception $ex) {
