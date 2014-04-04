@@ -15,7 +15,7 @@ use Zend\Db\TableGateway\TableGateway;
  *
  * @author sylvain
  */
-class MemberTable{
+class MemberTable {
 
     Protected $tableGateway;
 
@@ -49,7 +49,7 @@ class MemberTable{
             'adress' => $member->adress,
             'skype' => $member->skype,
         );
-        
+
         $id = (int) $member->id;
         if ($id == 0) {
             $this->tableGateway->insert($data);
