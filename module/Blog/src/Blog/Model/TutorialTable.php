@@ -11,9 +11,11 @@ namespace Blog\Model;
 use Zend\Db\TableGateway\TableGateway;
 
 /**
+ * 
  * Description of ArticleTable
  *
  * @author sylvain
+ * 
  */
 class TutorialTable {
 
@@ -23,20 +25,31 @@ class TutorialTable {
         $this->tableGateway = $tableGateway;
     }
 
-//----------------------------------------------------------------------------->   
-//Jointure on Tutorial and Member.
-//    public function getTutorials() {
-//    $select = $this->tableGateway->getSql()->select();
-//    $select->columns(array('blog_id', 'interest_id', 'owner_id', 'title', 'date_created'));
-//    $select->join('users', 'users.user_id = blogs_settings.owner_id', array('username'), 'left');
-//
-//    $resultSet = $this->tableGateway->selectWith($select);
-//
-//    return $resultSet;
-//}
-//----------------------------------------------------------------------------->   
-//Find all result on Tutorial Table.
+    /**
+     * Exemple of Jointure on Tutorial and Member 
+     * 
+     *  public function getTutorials() {
+     *  $select = $this->tableGateway->getSql()->select();
+     * $select->columns(array('blog_id', 'interest_id', 'owner_id', 'title', 'date_created'));
+     *  $select->join('users', 'users.user_id = blogs_settings.owner_id', array('username'), 'left');
+     *
+     * $resultSet = $this->tableGateway->selectWith($select);
+     *
+     * return $resultSet;
+     * }
+     * 
+     * 
+     * Find all result on Tutorial Table.
+     */
 
+    
+    /**
+     * 
+     * Function for Take all Tutorial on database and say who write this.
+     * @var $select, $resultSet
+     * @return $resultSet
+     * 
+     */
     public function fetchAll() {
         $select = $this->tableGateway->getSql()->select();
 
@@ -46,6 +59,15 @@ class TutorialTable {
         return $resultSet;
     }
 
+    /**
+     * 
+     * Function for find one Tutorial by selected id
+     * @param type $id
+     * @var $id, $rowset, $row
+     * @return $row
+     * @throws \Exception
+     * 
+     */
     public function getTutorial($id) {
         $id = (int) $id;
         $rowset = $this->tableGateway->select(array('id' => $id));
@@ -56,7 +78,15 @@ class TutorialTable {
         return $row;
     }
 
-    public function saveTutorial(Tutorial $tutorial, $member_id) {
+    /**
+     * 
+     * @param \Blog\Model\Tutorial $tutorial
+     * @param (int)$member_id
+     * @var $data, $id, $this->getTutorial($id)
+     * @throws \Exception
+     * 
+     */
+    public function saveTutorial(Tutorial $tutorial,int  $member_id) {
 
         $data = array(
             'title' => $tutorial->title,
@@ -72,11 +102,17 @@ class TutorialTable {
             if ($this->getTutorial($id)) {
                 $this->tableGateway->update($data, array('id' => $id));
             } else {
-                throw new \Exception('Member id does not exist');
+                throw new \Exception('Ce tutorial n\'existe pas');
             }
         }
     }
 
+    /**
+     * 
+     * Function for delete one tutorial by selected id
+     * @param type $id
+     * 
+     */
     public function deleteTutorial($id) {
         $this->tableGateway->delete(array('id' => (int) $id));
     }

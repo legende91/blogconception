@@ -18,7 +18,11 @@ use Zend\InputFilter\InputFilterInterface;
  * @author sylvain
  */
 class Tutorial implements InputFilterAwareInterface {
-
+    /**
+     *
+     * @var $id, $title, $contente, $date_pub, $member_id, $name, $inputFilter 
+     * 
+     */
     public $id;
     public $title;
     public $contente;
@@ -27,6 +31,15 @@ class Tutorial implements InputFilterAwareInterface {
     public $name;
     protected $inputFilter;
 
+    
+    /**
+     * 
+     * Function for reply automatiquenly Tutorial object
+     * @param type $data
+     * @var $this->id, $this->name, $this->mail, $this->date_creat, $this->tel, $this->logo,
+     * @var $this->level, $this->adress, $this->skype
+     * 
+     */
     public function exchangeArray($data) {
         $this->id = (!empty($data['id'])) ? $data['id'] : null;
         $this->title = (!empty($data['title'])) ? $data['title'] : null;
@@ -36,15 +49,35 @@ class Tutorial implements InputFilterAwareInterface {
         $this->name = (!empty($data['name'])) ? $data['name'] : null;
     }
 
+    /**
+     * 
+     * @return type
+     * 
+     * 
+     */
+    
     public function getArrayCopy() {
         return get_object_vars($this);
     }
 
-    // Add content to these methods:
+    /**
+     * 
+     * @param \Zend\InputFilter\InputFilterInterface $inputFilter
+     * @throws \Exception Add content to these methods:
+     * 
+     */
     public function setInputFilter(InputFilterInterface $inputFilter) {
-        throw new \Exception("Not used");
+        throw new \Exception("Non utilisé");
     }
 
+     /**
+     * 
+     * Function for Filter Formulaire
+     * @var $inputFilter
+     * @return $this->inputFilter return Objet of Filter
+     * 
+     */
+    
     public function getInputFilter() {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();

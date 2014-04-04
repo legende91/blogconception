@@ -20,6 +20,12 @@ use Zend\InputFilter\InputFilterInterface;
  */
 class Member implements InputFilterAwareInterface {
 
+    /**
+     *
+     * @var $id,$name, $mail, $date_creat, $tel, $logo,$level, $adress, $skype, 
+     * @var $inputFilter 
+     * 
+     */
     public $id;
     public $name;
     public $mail;
@@ -31,6 +37,15 @@ class Member implements InputFilterAwareInterface {
     public $skype;
     protected $inputFilter;
 
+    
+    /**
+     * 
+     * Function for reply automatiquenly Member object
+     * @param type $data
+     * @var $this->id, $this->name, $this->mail, $this->date_creat, $this->tel, $this->logo,
+     * @var $this->level, $this->adress, $this->skype
+     * 
+     */
     public function exchangeArray($data) {
         $this->id = (!empty($data['id'])) ? $data['id'] : null;
         $this->name = (!empty($data['name'])) ? $data['name'] : null;
@@ -43,15 +58,33 @@ class Member implements InputFilterAwareInterface {
         $this->skype = (!empty($data['skype'])) ? $data['skype'] : null;
     }
 
+    /**
+     * 
+     * @return type
+     * 
+     * 
+     */
     public function getArrayCopy() {
         return get_object_vars($this);
     }
 
-    // Add content to these methods:
+    /**
+     * 
+     *  Add content to these methods:
+     * 
+     */
+    
     public function setInputFilter(InputFilterInterface $inputFilter) {
-        throw new \Exception("Not used");
+        throw new \Exception("Non utilisé");
     }
 
+    /**
+     * 
+     * Function for Filter Formulaire
+     * @var $inputFilter
+     * @return $this->inputFilter return Objet of Filter
+     * 
+     */
     public function getInputFilter() {
         if (!$this->inputFilter) {
             $inputFilter = new InputFilter();

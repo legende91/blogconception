@@ -18,31 +18,42 @@ use Blog\Model\Tutorial;
 use Blog\Form\TutorialForm;
 
 class IndexController extends AbstractActionController {
-
+/**
+ *
+ * @var $memberTable, $form , $storage, $authservice, $tutorialTable
+ * 
+ */
     protected $memberTable;
     protected $form;
     protected $storage;
     protected $authservice;
     protected $tutorialTable;
 
-
-
-
+    /**
+     * 
+     * function for reply tutorial Object
+     * @var $sm
+     * @return $this->tutorialTable
+     * 
+     */
     public function getTutorialTable() {
-       
+
         if (!$this->tutorialTable) {
             $sm = $this->getServiceLocator();
             $this->tutorialTable = $sm->get('Blog\Model\TutorialTable');
         }
         return $this->tutorialTable;
     }
-  
-    
-//----------------------------------------------------------------------------->
-// methode for connect to my db on Member table
-    
+
+/**
+ * 
+ * methode for reply Member Object
+ * @var $sm
+ * @return type 
+ */
+
     public function getMemberTable() {
-       
+
         if (!$this->memberTable) {
             $sm = $this->getServiceLocator();
             $this->memberTable = $sm->get('Blog\Model\MemberTable');
@@ -50,17 +61,31 @@ class IndexController extends AbstractActionController {
         return $this->memberTable;
     }
 
-//----------------------------------------------------------------------------->
-// function for Add Formulaire and ppl
-    
+    /**
+     * function for Add new member
+     * @var $form, $member, $request
+     * @return type
+     */
+
     public function addAction() {
-        if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()){
+        /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
+        if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute('home');
         }
         $form = new MemberForm();
         $form->get('submit')->setValue('addMember');
 
         $request = $this->getRequest();
+        
+        /**
+         * 
+         * we see if forumlaire is ok else we redirect to Formulaire
+         * 
+         */
         if ($request->isPost()) {
             $member = new Member();
             $form->setInputFilter($member->getInputFilter());
@@ -68,157 +93,242 @@ class IndexController extends AbstractActionController {
             if ($form->isValid()) {
                 $member->exchangeArray($form->getData());
                 $this->getMemberTable()->saveMember($member);
-                // Redirect to list of Member  
+                /**
+                 * 
+                 *  Redirect to list of Member 
+                 * @return $this->redirect()->toRoute('home') return to Home_page
+                 *  
+                 */
                 return $this->redirect()->toRoute('home');
             }
         }
 
         return array('form' => $form);
     }
-//----------------------------------------------------------------------------->
-// function for Auth member
-    
-public function getAuthService()
-    {
-    
+
+    /**
+     * 
+     * function for Auth member
+     * @var $this->authservice
+     * @return $this->authservice
+     * 
+     */
+
+    public function getAuthService() {
+
         if (!$this->authservice) {
-            
+
             $this->authservice = $this->getServiceLocator()
-                                      ->get('AuthService');
+                    ->get('AuthService');
         }
-       
+
         return $this->authservice;
     }
-    
-//----------------------------------------------------------------------------->
-// function for Storage to service on zend
-    
-    public function getSessionStorage()
-    {
-        if (! $this->storage) {
+
+    /**
+     * 
+     * function for Storage to service on zend
+     * @var $this->storage
+     * @return $this->storage Stockage of data
+     * 
+     */
+    public function getSessionStorage() {
+        if (!$this->storage) {
             $this->storage = $this->getServiceLocator()
-                                  ->get('Blog\Model\MyAuthStorage');
+                    ->get('Blog\Model\MyAuthStorage');
         }
         return $this->storage;
     }
-    
-  
-//----------------------------------------------------------------------------->
-// function for login
-    
-    public function loginAction()
-    {
-        
-        //if already login, redirect to success page
-        if ($this->getAuthService()->hasIdentity()){
+
+    /**
+     * 
+     * function for login
+     * @var $this->getAuthService()->hasIdentity()
+     * @return $this->redirect()->toRoute('success')
+     * 
+     */
+
+    public function loginAction() {
+        /**
+         * 
+         * if already login, redirect to success page
+         * 
+         */
+        if ($this->getAuthService()->hasIdentity()) {
             return $this->redirect()->toRoute('success');
         }
     }
-    
- //----------------------------------------------------------------------------->
-// function for Autentification
-    
-    public function authenticateAction()
-    {
+
+    //----------------------------------------------------------------------------->
+// 
+
+    /**
+     * 
+     * function for Autentification
+     * @var $redirect, $request, $this->getAuthService(), $result, $userConnected
+     * @return $this->redirect()->toRoute($redirect)
+     * 
+     */
+    public function authenticateAction() {
         $redirect = 'home';
         $request = $this->getRequest();
-        if ($request->isPost()){
-                //check authentication...
-                $this->getAuthService()->getAdapter()
-                                       ->setIdentity($request->getPost('name'))
-                                       ->setCredential($request->getPost('password'));
-                                    
-                $result = $this->getAuthService()->authenticate();
-                foreach($result->getMessages() as $message){
-                    //save message temporary into flashmessenger
-                    $this->flashmessenger()->addMessage($message);
+        if ($request->isPost()) {
+            /**
+             * 
+             * check authentication...
+             * 
+             */
+            $this->getAuthService()->getAdapter()
+                    ->setIdentity($request->getPost('name'))
+                    ->setCredential($request->getPost('password'));
+
+            $result = $this->getAuthService()->authenticate();
+            foreach ($result->getMessages() as $message) {
+                /**
+                 * 
+                 * save message temporary into flashmessenger
+                 * 
+                 */
+                $this->flashmessenger()->addMessage($message);
+            }
+            if ($result->isValid()) {
+                $redirect = 'success';
+                /**
+                 * 
+                 * check if it has rememberMe :
+                 * 
+                 */
+                if ($request->getPost('rememberme') == 1) {
+                    $this->getSessionStorage()
+                            ->setRememberMe(1);
+                    /**
+                     * 
+                     * set storage again
+                     * 
+                     */
+                    $this->getAuthService()->setStorage($this->getSessionStorage());
                 }
-                if ($result->isValid()) {
-                    $redirect = 'success';
-                    //check if it has rememberMe :
-                    if ($request->getPost('rememberme') == 1 ) {
-                        $this->getSessionStorage()
-                             ->setRememberMe(1);
-                        //set storage again
-                        $this->getAuthService()->setStorage($this->getSessionStorage());
-                   }
-                   
-                    $userConnected= $this->getAuthService()->getAdapter()->getResultRowObject();
-                  
-                    $this->getAuthService()->getStorage()->write(array(
-                           'id' => $userConnected->id,
-                           'name' => $userConnected->name,
-                           'mail' => $userConnected->mail,
-                           'date_creat' => $userConnected->date_creat,
-                           'tel' => $userConnected->tel,
-                           'logo' => $userConnected->logo,
-                           'level' => $userConnected->level,
-                           'adress' => $userConnected->adress,
-                           'skype' => $userConnected->skype,
-                            ));  
-                }
+
+                $userConnected = $this->getAuthService()->getAdapter()->getResultRowObject();
+
+                $this->getAuthService()->getStorage()->write(array(
+                    'id' => $userConnected->id,
+                    'name' => $userConnected->name,
+                    'mail' => $userConnected->mail,
+                    'date_creat' => $userConnected->date_creat,
+                    'tel' => $userConnected->tel,
+                    'logo' => $userConnected->logo,
+                    'level' => $userConnected->level,
+                    'adress' => $userConnected->adress,
+                    'skype' => $userConnected->skype,
+                ));
+            }
         }
         return $this->redirect()->toRoute($redirect);
     }
-    
-    
-// public function logout
-    
-     public function logoutAction()
-    {
-      $this->getSessionStorage()->forgetMe();
+
+/**
+ * 
+ * public function logout
+ * @var $this->getSessionStorage(), $this->getAuthService(),$this->flashmessenger()
+ * @return $this->redirect()->toRoute('home')
+ *  
+ */
+
+    public function logoutAction() {
+        $this->getSessionStorage()->forgetMe();
         $this->getAuthService()->clearIdentity();
-        $this->flashmessenger()->addMessage("You've been logged out");
+        $this->flashmessenger()->addMessage("Vous etes bien déconeté.");
         return $this->redirect()->toRoute('home');
     }
-    
-    
-//----------------------------------------------------------------------------->
-// Default Controller
-    
+
+/**
+ * 
+ * Default Controller
+ * @var $this->getTutorialTable(), $this->getMemberTable()
+ * @return \Zend\View\Model\ViewModel
+ *  
+ */
+
     public function indexAction() {
         return new ViewModel(array(
             'tutorials' => $this->getTutorialTable()->fetchAll(),
             'members' => $this->getMemberTable()->fetchAll(),
-           
         ));
     }
 
+/**
+ * 
+ * Controller for Add member
+ * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
+ * @return $this->addAction()
+ * 
+ */
 
-
-//-----------------------------------------------------------------------------> 
-// Controller for Add member
-    
     public function addMemberAction() {
-         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()){
+         /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
+        if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
             return $this->redirect()->toRoute('home');
         }
+        
         return $this->addAction();
     }
-    
-//-----------------------------------------------------------------------------> 
-// Controller for Delete Member
-    
+
+/**
+ * 
+ * Controller for Delete Member
+ * @var $id, $this->getMemberTable(), $home
+ * @var $this->getServiceLocator()->get('AuthService')->hasIdentity()
+ * @return type
+ * 
+ */
+
     public function deleteMemberAction() {
-         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()){
-            return $this->redirect()->toRoute('home');
+         /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
+        $home= 'home';
+        if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
+            return $this->redirect()->toRoute($home);
         }
-         $id = (int) $this->params()->fromRoute('id', 0);
+        $id = (int) $this->params()->fromRoute('id', 0);
         if (!$id) {
-            return $this->redirect()->toRoute('home');
+            return $this->redirect()->toRoute($home);
         }
-         $this->getMemberTable()->deleteMember($id);
-         return $this->redirect()->toRoute('home');
+        $this->getMemberTable()->deleteMember($id);
+        return $this->redirect()->toRoute($home);
     }
-    
-//----------------------------------------------------------------------------->
-// Controller Edit Member
-    
+
+/**
+ * 
+ * Controller Edit Member
+ * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(),
+ * @var $id, $member, $form, $request, $redirect
+ * @return 
+ * 
+ */
+
     public function editMemberAction() {
-         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()){
-            return $this->redirect()->toRoute('home');
+         /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
+        $redirect= 'home';
+        if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
+            return $this->redirect()->toRoute($redirect);
         }
-     // We take ID on Params to URL 
+        /**
+         * 
+         *  We take ID on Params to URL 
+         * 
+         */
         $id = (int) $this->params()->fromRoute('id', 0);
         if (!$id) {
             return $this->redirect()->toRoute('blog_editMember', array(
@@ -226,8 +336,13 @@ public function getAuthService()
             ));
         }
 
-        // Get the Member with the specified id.  An exception is thrown
-        // if it cannot be found, in which case go to the index page.
+        /**
+         * 
+         * Get the Member with the specified id.  An exception is thrown
+         * if it cannot be found, in which case go to the index page.
+         * 
+         */
+        
         try {
             $member = $this->getMemberTable()->getMember($id);
         } catch (\Exception $ex) {
@@ -247,8 +362,12 @@ public function getAuthService()
             if ($form->isValid()) {
                 $this->getMemberTable()->saveMember($member);
 
-                // Redirect to list of Member
-                return $this->redirect()->toRoute('home');
+                /**
+                 * 
+                 *  Redirect to list of Member
+                 * 
+                 */
+                return $this->redirect()->toRoute($redirect);
             }
         }
 
@@ -257,15 +376,30 @@ public function getAuthService()
             'form' => $form,
         );
     }
-    
-//----------------------------------------------------------------------------->
-// Controller Profil Member
-    
+
+/**
+ * 
+ * Controller Profil Member
+ * @var $this->getServiceLocator()->get('AuthService')->hasIdentity(), $member_id
+ * @var $form, $request
+ * 
+ */
+
     public function profilMemberAction() {
-         if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()){
-            return $this->redirect()->toRoute('home');
+        /**
+         * 
+         * we see if ppl was logged.
+         * 
+         */
+        $redirect= 'home';
+        if (!$this->getServiceLocator()->get('AuthService')->hasIdentity()) {
+            return $this->redirect()->toRoute($redirect);
         }
-     // We take ID on Member Auth. 
+        /**
+         * 
+         *  We take ID on Member Auth. 
+         * 
+         */
         $member_id = $this->getServiceLocator()->get('AuthService')->getIdentity()['id'];
         if (!$member_id) {
             return $this->redirect()->toRoute('blog_editMember', array(
@@ -273,8 +407,13 @@ public function getAuthService()
             ));
         }
 
-        // Get the Member with the specified id.  An exception is thrown
-        // if it cannot be found, in which case go to the index page.
+        /**
+         * 
+         * Get the Member with the specified id.  An exception is thrown
+         * if it cannot be found, in which case go to the index page.
+         * 
+         */
+        
         try {
             $member = $this->getMemberTable()->getMember($member_id);
         } catch (\Exception $ex) {
@@ -294,8 +433,12 @@ public function getAuthService()
             if ($form->isValid()) {
                 $this->getMemberTable()->saveMember($member);
 
-                // Redirect to list of Member
-                return $this->redirect()->toRoute('home');
+                /**
+                 *
+                 * Redirect to list of Member
+                 * 
+                 */
+                return $this->redirect()->toRoute($redirect);
             }
         }
 
@@ -304,6 +447,5 @@ public function getAuthService()
             'form' => $form,
         );
     }
-
 
 }

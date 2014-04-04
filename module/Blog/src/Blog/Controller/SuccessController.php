@@ -20,13 +20,12 @@ use Blog\Form\MemberForm;
 use Blog\Model\Tutorial;
 use Blog\Form\TutorialForm;
 
-
 class SuccessController extends AbstractActionController {
 
-     protected $tutorialTable;
-     protected $memberTable;
-     protected $form;
-    
+    protected $tutorialTable;
+    protected $memberTable;
+    protected $form;
+
     public function getTutorialTable() {
 
         if (!$this->tutorialTable) {
